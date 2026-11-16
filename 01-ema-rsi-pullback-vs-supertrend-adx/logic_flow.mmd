@@ -1,0 +1,144 @@
+### 🟢 EMA RSI Pullback Trend (Winner — Statistical Edge)
+
+```mermaid
+flowchart TD
+    classDef entry fill:#10B981,color:#0A0F1C,stroke:#10B981,stroke-width:2px
+    classDef exit fill:#F85149,color:#FFFFFF,stroke:#F85149,stroke-width:2px
+    classDef decision fill:#FFA502,color:#0A0F1C,stroke:#FFA502,stroke-width:2px
+    classDef process fill:#70A1FF,color:#FFFFFF,stroke:#70A1FF,stroke-width:2px
+    classDef startend fill:#0A0F1C,color:#FFFFFF,stroke:#10B981,stroke-width:2px
+
+    START([START<br/>New 4H Bar]):::startend
+    WARMUP{Indicators<br/>Ready?}:::decision
+    EMA50[EMA 50<br/>Fast Trend]:::process
+    EMA200[EMA 200<br/>Slow Trend Filter]:::process
+    RSI[RSI 14<br/>Pullback Trigger]:::process
+    ATR[ATR 14<br/>Stop/Target Sizing]:::process
+
+    TREND{Price > EMA200<br/>& EMA50 > EMA200?}:::decision
+    PULLBACK{RSI was < 45<br/>now crosses >= 45?}:::decision
+    ENTRY_LONG[LONG ENTRY<br/>Market Order 50%]:::entry
+
+    SL[Stop Loss: 2.5×ATR<br/>(opt: 3.72×)]:::exit
+    TP[Take Profit: 5×ATR<br/>(opt: 7.44×)]:::exit
+    HOLD{In Position?}:::decision
+    BARS_HELD{Bars Held<br/>>= 36?<br/>(opt: 47)}:::decision
+    TIMEOUT[Timeout Exit<br/>Liquidate]:::exit
+    TREND_EXIT{Close < EMA200?}:::decision
+    SIGNAL_EXIT[Signal Exit<br/>Liquidate]:::exit
+
+    END([END]):::startend
+
+    START --> WARMUP
+    WARMUP -- No --> END
+    WARMUP -- Yes --> EMA50
+    EMA50 --> EMA200
+    EMA200 --> RSI
+    RSI --> ATR
+    ATR --> TREND
+    TREND -- No --> END
+    TREND -- Yes --> PULLBACK
+    PULLBACK -- No --> END
+    PULLBACK -- Yes --> ENTRY_LONG
+    ENTRY_LONG --> SL
+    ENTRY_LONG --> TP
+    SL --> HOLD
+    TP --> HOLD
+    HOLD -- No --> END
+    HOLD -- Yes --> BARS_HELD
+    BARS_HELD -- Yes --> TIMEOUT
+    BARS_HELD -- No --> TREND_EXIT
+    TREND_EXIT -- Yes --> SIGNAL_EXIT
+    TREND_EXIT -- No --> END
+    TIMEOUT --> END
+    SIGNAL_EXIT --> END
+```
+
+---
+
+### 🔴 Supertrend + ADX (Loser — Win-Rate Illusion)
+
+```mermaid
+flowchart TD
+    classDef entry fill:#F85149,color:#FFFFFF,stroke:#F85149,stroke-width:2px
+    classDef exit fill:#10B981,color:#0A0F1C,stroke:#10B981,stroke-width:2px
+    classDef decision fill:#FFA502,color:#0A0F1C,stroke:#FFA502,stroke-width:2px
+    classDef process fill:#70A1FF,color:#FFFFFF,stroke:#70A1FF,stroke-width:2px
+    classDef startend fill:#0A0F1C,color:#FFFFFF,stroke:#F85149,stroke-width:2px
+    classDef warning fill:#F85149,color:#FFFFFF,stroke:#F85149,stroke-width:3px,stroke-dasharray: 5 5
+
+    START([START<br/>New 2H Bar]):::startend
+    WARMUP{Indicators<br/>Ready?}:::decision
+    ATR_IND[ATR 10<br/>Supertrend Base]:::process
+    ADX[ADX 14<br/>Trend Strength Filter]:::process
+
+    SUPERTREND[Supertrend(10,3)<br/>Flip Detection]:::process
+    ADX_THRESH{ADX > 25?}:::decision
+    LONG_SIG{Supertrend Flip<br/>-1 → +1?}:::decision
+    ENTRY_LONG[LONG ENTRY<br/>Market Order 90%]:::entry
+
+    SL[Stop Loss: 3%<br/>Fixed %]:::exit
+    TP[Take Profit: 6%<br/>Fixed %]:::exit
+    HOLD{In Position?}:::decision
+    BARS_HELD{Bars Held<br/>>= 48?}:::decision
+    TIMEOUT[Timeout Exit<br/>Liquidate]:::exit
+    SHORT_SIG{Supertrend Flip<br/>+1 → -1?}:::decision
+    SIGNAL_EXIT[Supertrend Bearish<br/>Flip Exit]:::exit
+
+    NO_TREND_FILTER[⚠️ NO MACRO TREND FILTER<br/>Chops in sideways markets]:::warning
+
+    END([END]):::startend
+
+    START --> WARMUP
+    WARMUP -- No --> END
+    WARMUP -- Yes --> ATR_IND
+    ATR_IND --> ADX
+    ADX --> SUPERTREND
+    SUPERTREND --> ADX_THRESH
+    ADX_THRESH -- No --> END
+    ADX_THRESH -- Yes --> LONG_SIG
+    LONG_SIG -- No --> END
+    LONG_SIG -- Yes --> ENTRY_LONG
+    ENTRY_LONG --> SL
+    ENTRY_LONG --> TP
+    SL --> HOLD
+    TP --> HOLD
+    HOLD -- No --> END
+    HOLD -- Yes --> BARS_HELD
+    BARS_HELD -- Yes --> TIMEOUT
+    BARS_HELD -- No --> SHORT_SIG
+    SHORT_SIG -- Yes --> SIGNAL_EXIT
+    SHORT_SIG -- No --> END
+    TIMEOUT --> END
+    SIGNAL_EXIT --> END
+
+    NO_TREND_FILTER -.-> ENTRY_LONG
+```
+
+---
+
+### ⚔️ The Critical Difference: Trend Filter vs. None
+
+```mermaid
+flowchart LR
+    subgraph EMARSI["🟢 EMA RSI Pullback (Winner)"]
+        E1[Price > EMA200?<br/>EMA50 > EMA200?] -->|YES| E2[RSI Pullback<br/><45 then ≥45?]
+        E2 -->|YES| E3[LONG<br/>with trend]
+        E1 -->|NO| E4[Stay Flat<br/>No fight]
+        E2 -->|NO| E4
+    end
+
+    subgraph SUPERADX["🔴 Supertrend + ADX (Loser)"]
+        S1[ADX > 25?] -->|YES| S2[Supertrend Flip<br/>-1 → +1?]
+        S2 -->|YES| S3[LONG<br/>(even in chop!)]
+        S1 -->|NO| S4[Wait]
+        S2 -->|NO| S4
+    end
+
+    style EMARSI fill:#10B98115,stroke:#10B981,stroke-width:2px
+    style SUPERADX fill:#F8514915,stroke:#F85149,stroke-width:2px
+    style E3 fill:#10B981,color:#0A0F1C
+    style S3 fill:#F85149,color:#FFFFFF
+    style E4 fill:#161B22,color:#8B949E
+    style S4 fill:#161B22,color:#8B949E
+```

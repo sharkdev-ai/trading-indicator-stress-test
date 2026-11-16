@@ -1,0 +1,5 @@
+.claude/
+CLAUDE.md
+*.log
+generate_*.py
+*_success.txt
