@@ -1,5 +1,83 @@
+# ===================================================================
+# SECURITY & BUILD ARTIFACTS — NEVER COMMIT TO PUBLIC GITHUB
+# Block sensitive files: API keys, secrets, .env, *.key, *.pem, logs, build artifacts
+# ===================================================================
+
+# API Keys & Secrets
+.env
+.env.*
+*.env
+*.key
+*.pem
+*.p12
+*.pfx
+*.cer
+*.crt
+*.pem
+id_rsa*
+id_ed25519*
+*_rsa
+*_dsa
+*.ppk
+
+# API Keys in code (common patterns)
+*api*key*
+*secret*
+*token*
+*password*
+*credential*
+config.json
+settings.json
+secrets.json
+
+# Logs & Build Artifacts
+*.log
+*.log.*
+logs/
+*.out
+*.err
+build/
+dist/
+*.pyc
+__pycache__/
+*.pyo
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+*.egg-info/
+*.egg/
+.mypy_cache/
+.ruff_cache/
+
+# OS / Editor Artifacts
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/
+.idea/
+*.suo
+*.user
+*.userprefs
+
+# Local Claude settings
 .claude/
 CLAUDE.md
-*.log
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+
+# QuantConnect/Lean specific
+data/
+results/
+*.json.backup
+
+# Legacy patterns (from original .gitignore)
 generate_*.py
 *_success.txt
+
+# ===================================================================
+# PUBLIC CONTENT (Tracked) — Strategy code, README, logic_flow, assets
+# ===================================================================
